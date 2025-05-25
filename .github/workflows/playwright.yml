@@ -4,29 +4,54 @@ name: Playwright Tests
 
 on:
   push:
-    branches: [ main, master ] # Run on push to main or master branch
+    branches: [ main, master ]
   pull_request:
-    branches: [ main, master ] # Run on pull requests to main or master
+    branches: [ main, master ]
 
 jobs:
   test:
-    timeout-minutes: 60 # Set a timeout for the entire job
-    runs-on: ubuntu-latest # Specify the operating system for the runner
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4 # Action to check out your repository code
+      uses: actions/checkout@v4
 
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: 20 # Or your desired Node.js version, e.g., 18, 20, 22
+        node-version: 20
 
     - name: Install dependencies
-      run: npm ci # 'npm ci' is preferred over 'npm install' in CI environments for clean installs
+      run: npm ci
 
     - name: Install Playwright browsers
-      run: npx playwright install --with-deps # Install browsers and their dependencies
+      run: npx playwright install --with-deps
 
     - name: Run Playwright tests
-      run: npm test # Command to execute your tests
+      # We'll run in headless mode on CI for speed and reliability.
+      # The reporter config in playwright.config.ts will handle outputting JUnit and HTML.
+      run: npx playwright test --headless
+
+    - name: Upload JUnit XML report
+      uses: actions/upload-artifact@v4
+      if: always() # Upload even if tests fail
+      with:
+        name: playwright-junit-report
+        path: junit-results.xml # Path to your JUnit XML file
+
+    - name: Upload Playwright HTML report
+      uses: actions/upload-artifact@v4
+      if: always() # Upload even if tests fail
+      with:
+        name: playwright-html-report
+        path: playwright-report/ # Path to the Playwright HTML report directory
+        retention-days: 5 # Optional: how long to keep the artifact (e.g., 5 days)
+
+    - name: Upload Playwright Videos (if any)
+      uses: actions/upload-artifact@v4
+      if: always() # Upload even if tests fail
+      with:
+        name: playwright-videos
+        path: test-results/**/*.webm # Adjust if your video output path differs
+        retention-days: 5
