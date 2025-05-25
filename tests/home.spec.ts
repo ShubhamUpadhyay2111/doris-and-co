@@ -31,7 +31,7 @@ test.describe("Launch to Doris and Co", () => {
     await expect(homePage.buckSelected).toHaveText(buckSelectShortForm);
   });
 
-  test.only("should verify the top slide heading, subheading and button", async () => {
+  test("should verify the top slide heading, subheading and button", async () => {
     const topSlideData = await homePage.getCurrentActiveSlideText();
     console.log("topSlideData: " + JSON.stringify(topSlideData));
 
