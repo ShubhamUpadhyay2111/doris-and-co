@@ -18,9 +18,9 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests', // Specifies where your tests are located
   fullyParallel: true, // Run tests in files in parallel
-//   forbidOnly: !!process.env.CI, // Disallow .only on CI
-//   retries: process.env.CI ? 2 : 0, // Retry on CI
-//   workers: process.env.CI ? 1 : undefined, // Opt for one worker on CI, default on local
+  forbidOnly: !!process.env.CI, // Disallow .only on CI
+  retries: process.env.CI ? 2 : 0, // Retry on CI
+  workers: process.env.CI ? 1 : undefined, // Opt for one worker on CI, default on local
   reporter:  [
     ['html'], // For local interactive reports
     ['junit', { outputFile: 'junit-results.xml' }] // For CI/CD tools
@@ -54,7 +54,7 @@ export default defineConfig({
     },
     
     // To run in headful mode for local debugging:
-    headless: false, // <--- Change this to false for headful
+    headless: !!process.env.CI, // Run headless on CI/CD, headful locally
     
     // Collect trace when retrying the failed test.
     trace: 'on-first-retry',
