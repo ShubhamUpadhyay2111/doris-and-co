@@ -42,7 +42,7 @@ export class HomePage {
 
   // Method to navigate to the example page
   async goto() {
-    await this.page.goto("/");
+    await this.page.goto("./");
   }
 
   // Method to check if the page title matches
