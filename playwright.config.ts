@@ -54,7 +54,7 @@ export default defineConfig({
     },
     
     // To run in headful mode for local debugging:
-    headless: process.env.CI ? false : true,
+    // headless: process.env.CI ? false : true,
     
     // Collect trace when retrying the failed test.
     trace: 'on-first-retry',
