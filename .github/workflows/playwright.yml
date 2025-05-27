@@ -31,7 +31,7 @@ jobs:
     - name: Run Playwright tests
       # We'll run in headless mode on CI for speed and reliability.
       # The reporter config in playwright.config.ts will handle outputting JUnit and HTML.
-      run: npx playwright test --headless
+      run: npm run test:ci
 
     - name: Upload JUnit XML report
       uses: actions/upload-artifact@v4
