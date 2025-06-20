@@ -43,4 +43,9 @@ test.describe("Launch to Doris and Co", () => {
     );
     expect(homeTopSlide.button).toEqual(topSlideData.slideHeading);
   });
+
+
+  test("should click on all faqs", async () => {
+    await homePage.scrollToAndClickAllFAQs();
+  });
 });

@@ -14,6 +14,12 @@ export class HomePage {
   readonly slideButtonShopNow: Locator;
   readonly slideSubHeading: Locator;
 
+  readonly faqs1: Locator;
+  readonly faqs2: Locator;
+  readonly faqs3: Locator;
+  readonly faqs4: Locator;
+  readonly faqs5: Locator;
+
   constructor(page: Page) {
     this.page = page;
     this.heading = page.locator('//img[@alt="Doris & Co."][last()]');
@@ -37,6 +43,22 @@ export class HomePage {
     );
     this.slideSubHeading = page.locator(
       `${this.topSlide}//p[@class="inline-richtext h2"]`
+    );
+
+    this.faqs1 = page.locator(
+      '//*[contains(text(), "How do I apply the PHOFAY Mousse Liquid Blush?")]'
+    );
+    this.faqs2 = page.locator(
+      '//*[contains(text(), "Does it contain SPF protection?")]'
+    );
+    this.faqs3 = page.locator(
+      '//*[contains(text(), "Is PHOFAY Moisturizing Lipstick suitable for sensitive lips?")]'
+    );
+    this.faqs4 = page.locator(
+      '//*[contains(text(), "How do I apply the PHOFAY Highlighter Wand?")]'
+    );
+    this.faqs5 = page.locator(
+      '//*[contains(text(), "How often should I use the Deep Collagen Overnight Mask?")]'
     );
   }
 
@@ -86,5 +108,15 @@ export class HomePage {
       slideSubHeading: slideSubHeadingText || "",
       shopNowButtonText: shopNowButtonText || "",
     };
+  }
+
+
+  async scrollToAndClickAllFAQs () {
+    const faqs = [this.faqs1, this.faqs2, this.faqs3, this.faqs4, this.faqs5];
+
+    for (const faq of faqs) {
+      await faq.scrollIntoViewIfNeeded();
+      await faq.click();
+    }
   }
 }

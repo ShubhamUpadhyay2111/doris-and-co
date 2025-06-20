@@ -57,8 +57,9 @@ export default defineConfig({
     // headless: process.env.CI ? false : true,
     
     // Collect trace when retrying the failed test.
-    trace: 'on-first-retry',
+    trace: 'on',
 
     video: 'on',
+    screenshot: 'on'
   },
 });
