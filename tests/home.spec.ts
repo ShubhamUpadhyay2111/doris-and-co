@@ -1,51 +1,49 @@
-import { test, expect } from "@playwright/test";
+import { test as base, expect } from "@playwright/test";
 import { HomePage } from "../pages/homePage";
 import { homeTopSlide } from "../pages/pageData/home";
 
+// Extend base test with a HomePage fixture
+const test = base.extend<{ homePage: HomePage }>({
+  homePage: async ({ page }, use) => {
+    const homePage = new HomePage(page);
+    await homePage.goto();
+    await use(homePage);
+  },
+});
+
+// Test suite for Doris and Co homepage
+
 test.describe("Launch to Doris and Co", () => {
-  let homePage: HomePage;
-
-  test.beforeEach(async ({ page }) => {
-    homePage = new HomePage(page);
-    homePage.goto();
-  });
-
-  test("should navigate to Doris and Co and verify title", async ({ page }) => {
+  test("should display Doris and Co logo", async ({ homePage }) => {
     await homePage.checkHeadingVisibility();
   });
 
-  test("should click on the dropdown menu and verify options displayed", async () => {
-    await homePage.clickDropdownMenuAndverifyOptionsDisplayed();
+  test("should show dropdown menu options when clicked", async ({ homePage }) => {
+    await homePage.clickDropdownMenuAndVerifyOptionsDisplayed();
   });
 
-  test("should select a random buck and verify it is selected", async () => {
-    await homePage.clickDropdownMenuAndverifyOptionsDisplayed();
+  test("should select a random buck and verify selection", async ({ homePage }) => {
+    await homePage.clickDropdownMenuAndVerifyOptionsDisplayed();
     const selectedBuck = await homePage.selectRandomBuckOption();
-
-    let buckSelectShortForm;
-    if (selectedBuck === "Auto Location") {
-      buckSelectShortForm = "INR";
-    }
-    buckSelectShortForm = selectedBuck.match(/\(([^)]+)\)/)?.[1] ?? "";
-    console.log("buckSelectShortForm: " + buckSelectShortForm);
+    // Extract short form from selected buck
+    let buckSelectShortForm = selectedBuck === "Auto Location"
+      ? "INR"
+      : selectedBuck.match(/\(([^)]+)\)/)?.[1] ?? "";
     await expect(homePage.buckSelected).toHaveText(buckSelectShortForm);
   });
 
-  test("should verify the top slide heading, subheading and button", async () => {
+  test("should verify top slide heading, subheading, and button", async ({ homePage }) => {
     const topSlideData = await homePage.getCurrentActiveSlideText();
-    console.log("topSlideData: " + JSON.stringify(topSlideData));
-
     expect(homeTopSlide.heading).toEqual(
       expect.arrayContaining([topSlideData.slideHeading])
     );
     expect(homeTopSlide.subHeading).toEqual(
       expect.arrayContaining([topSlideData.slideSubHeading])
     );
-    expect(homeTopSlide.button).toEqual(topSlideData.slideHeading);
+    expect(homeTopSlide.button).toEqual(topSlideData.shopNowButtonText);
   });
 
-
-  test("should click on all faqs", async () => {
+  test("should click all FAQs", async ({ homePage }) => {
     await homePage.scrollToAndClickAllFAQs();
   });
 });
