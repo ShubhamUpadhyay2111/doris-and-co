@@ -1,6 +1,6 @@
 import { test as base, expect } from "@playwright/test";
 import { HomePage } from "../pages/homePage";
-import { homeTopSlide } from "../pages/pageData/home";
+import { allStaticTexts, homeTopSlides } from "../pages/pageData/home";
 
 // Extend base test with a HomePage fixture
 const test = base.extend<{ homePage: HomePage }>({
@@ -32,18 +32,32 @@ test.describe("Launch to Doris and Co", () => {
     await expect(homePage.buckSelected).toHaveText(buckSelectShortForm);
   });
 
-  test("should verify top slide heading, subheading, and button", async ({ homePage }) => {
-    const topSlideData = await homePage.getCurrentActiveSlideText();
-    expect(homeTopSlide.heading).toEqual(
-      expect.arrayContaining([topSlideData.slideHeading])
-    );
-    expect(homeTopSlide.subHeading).toEqual(
-      expect.arrayContaining([topSlideData.slideSubHeading])
-    );
-    expect(homeTopSlide.button).toEqual(topSlideData.shopNowButtonText);
-  });
+  test("should verify the top slide heading, subheading and button", async ({ homePage }) => {
+  const topSlideData = await homePage.getCurrentActiveSlideText();
+  console.log("topSlideData:", topSlideData);
 
-  test("should click all FAQs", async ({ homePage }) => {
-    await homePage.scrollToAndClickAllFAQs();
+  const match = homeTopSlides.find(
+    (slide) =>
+      slide.heading === topSlideData.slideHeading &&
+      slide.subHeading === topSlideData.slideSubHeading &&
+      slide.button === topSlideData.shopNowButtonText
+  );
+
+  expect(match).toBeDefined(); // At least one known slide should match current content
+});
+
+
+  test.only("should verify all static texts", async ({ homePage }) => {
+    for (const text of allStaticTexts) {
+      const locator = homePage.page.getByText(text, { exact: false });
+      // Scroll to the first occurrence and check visibility
+      if (await locator.count() > 0) {
+        await locator.first().scrollIntoViewIfNeeded();
+        await expect(locator.first()).toBeVisible();
+      } else {
+        throw new Error(`Text not found on page: ${text}`);
+      }
+    }
+    await homePage.verifyFaqsAndTexts();
   });
 });

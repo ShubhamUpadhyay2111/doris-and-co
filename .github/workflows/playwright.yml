@@ -17,6 +17,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Cache node modules
+      uses: actions/cache@v4
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
@@ -29,29 +37,30 @@ jobs:
       run: npx playwright install --with-deps
 
     - name: Run Playwright tests
-      # We'll run in headless mode on CI for speed and reliability.
-      # The reporter config in playwright.config.ts will handle outputting JUnit and HTML.
-      run: npm run test:ci
+      run: npx playwright test
 
     - name: Upload JUnit XML report
       uses: actions/upload-artifact@v4
-      if: always() # Upload even if tests fail
+      if: always()
       with:
         name: playwright-junit-report
-        path: junit-results.xml # Path to your JUnit XML file
+        path: junit-results.xml
 
     - name: Upload Playwright HTML report
       uses: actions/upload-artifact@v4
-      if: always() # Upload even if tests fail
+      if: always()
       with:
         name: playwright-html-report
-        path: playwright-report/ # Path to the Playwright HTML report directory
-        retention-days: 5 # Optional: how long to keep the artifact (e.g., 5 days)
+        path: playwright-report/
+        retention-days: 5
 
     - name: Upload Playwright Videos (if any)
       uses: actions/upload-artifact@v4
-      if: always() # Upload even if tests fail
+      if: always()
       with:
         name: playwright-videos
-        path: test-results/**/*.webm # Adjust if your video output path differs
+        path: test-results/**/*.webm
         retention-days: 5
+
+    - name: Print HTML report location
+      run: echo "Playwright HTML report is available in the playwright-html-report artifact."
